@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.Windows.Media.Imaging;
+using System.Windows.Input;
 
 
 
@@ -39,6 +40,8 @@ namespace PaintApplicationAssignment
 
         private SolidColorBrush sprayColor = Brushes.Blue; // Default spray color
         private double sprayDensity = 2; // Default spray density
+        private double currentEraserSize = 2; // Default eraser size
+
 
         private void SprayBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -68,13 +71,21 @@ namespace PaintApplicationAssignment
         }
         private void ThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            // Update the spray density when the thickness slider value changes
+            // Update the eraser size when the thickness slider value changes
             if (IsLoaded)
             {
-                PenAttributes.Width = ThicknessSlider.Value;
-                PenAttributes.Height = ThicknessSlider.Value;
+                currentEraserSize = ThicknessSlider.Value;
+
+                if (Canvas.EditingMode == InkCanvasEditingMode.EraseByPoint)
+                {
+                    // If the eraser is currently in use, update its size dynamically
+                    SetEditingMode(EditingMode.Eraser);
+                    EraserBtn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                }
             }
         }
+
+
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             // Clear the ink canvas
@@ -180,12 +191,68 @@ namespace PaintApplicationAssignment
         {
             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
         private void EraserBtn_Click(object sender, RoutedEventArgs e)
         {
             // Eraser button click event
+            currentEraserSize = ThicknessSlider.Value; // Set the current eraser size
             SetEditingMode(EditingMode.Eraser);
+
+            // Subscribe to mouse events for manual erasing
+            Canvas.MouseMove += Canvas_MouseMoveForEraser;
+            Canvas.MouseUp += Canvas_MouseUpForEraser;
         }
+
+        private void Canvas_MouseMoveForEraser(object sender, MouseEventArgs e)
+        {
+            // Check if the left mouse button is pressed (erasing)
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                // Get the position of the mouse
+                Point mousePos = e.GetPosition(Canvas);
+
+                // Remove ellipses near the mouse position
+                RemoveEllipsesNearPoint(mousePos);
+            }
+        }
+
+
+        private void Canvas_MouseUpForEraser(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Unsubscribe from mouse events when the mouse button is released
+            Canvas.MouseMove -= Canvas_MouseMoveForEraser;
+            Canvas.MouseUp -= Canvas_MouseUpForEraser;
+        }
+
+        private void RemoveEllipsesNearPoint(Point point)
+        {
+            // Create a list to store ellipses for removal
+            List<UIElement> ellipsesToRemove = new List<UIElement>();
+
+            foreach (UIElement element in Canvas.Children)
+            {
+                if (element is Ellipse ellipse)
+                {
+                    // Get the position of the ellipse
+                    Point ellipsePos = new Point(InkCanvas.GetLeft(ellipse) + PenAttributes.Width, InkCanvas.GetTop(ellipse) + PenAttributes.Height);
+
+                    // Calculate the distance between the mouse position and the ellipse position
+                    double distance = Math.Sqrt(Math.Pow(point.X - ellipsePos.X, 2) + Math.Pow(point.Y - ellipsePos.Y, 2));
+
+                    // If the distance is below the threshold, add the ellipse for removal
+                    if (distance < currentEraserSize)
+                    {
+                        ellipsesToRemove.Add(ellipse);
+                    }
+                }
+            }
+
+            // Remove the ellipses from the canvas
+            foreach (UIElement ellipseToRemove in ellipsesToRemove)
+            {
+                Canvas.Children.Remove(ellipseToRemove);
+            }
+        }
+
 
         private void PenBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -235,9 +302,12 @@ namespace PaintApplicationAssignment
                     break;
                 case EditingMode.Eraser:
                     EraserBtn.IsChecked = true;
-                    Canvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
+                    Canvas.EditingMode = InkCanvasEditingMode.EraseByPoint; // Use EraseByStroke instead of EraseByPoint
+                    Canvas.MouseMove -= Canvas_MouseMoveForEraser;
+                    Canvas.MouseUp -= Canvas_MouseUpForEraser;
                     modeName = "Eraser";
                     break;
+
                 case EditingMode.Spray:
                     SprayBtn.IsChecked = true;
                     Canvas.EditingMode = InkCanvasEditingMode.None;
