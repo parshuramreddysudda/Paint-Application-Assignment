@@ -1,9 +1,10 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Windows;
 
 public class SprayEffect
 {
@@ -12,7 +13,6 @@ public class SprayEffect
     private readonly int particlesPerSecond;
     private readonly DispatcherTimer sprayTimer;
     private readonly Random random;
-    private readonly SolidColorBrush sprayColor;
     private readonly DrawingAttributes sprayAttributes;
 
     private bool IsMousePressed = false;
@@ -24,7 +24,7 @@ public class SprayEffect
         this.sprayRadius = sprayRadius;
         this.particlesPerSecond = particlesPerSecond;
         this.random = new Random();
-        this.sprayAttributes = sprayAttributes; // Use DrawingAttributes
+        this.sprayAttributes = sprayAttributes;
 
         this.sprayTimer = new DispatcherTimer();
         this.sprayTimer.Tick += SprayTimer_Tick;
@@ -41,43 +41,46 @@ public class SprayEffect
         sprayTimer.Start();
     }
 
+    public void StopSpraying()
+    {
+        sprayTimer.Stop();
+    }
+
     private void SprayTimer_Tick(object sender, EventArgs e)
     {
-        // Check if the mouse button is pressed
         if (IsMousePressed)
         {
-            // Calculate a random point within the spray radius
-            double angle = random.NextDouble() * 2 * Math.PI;
-            double distance = Math.Sqrt(random.NextDouble()) * sprayRadius;
-
-            double particleX = sprayCenter.X + distance * Math.Cos(angle);
-            double particleY = sprayCenter.Y + distance * Math.Sin(angle);
-
-            // Create a small ellipse at the calculated point
-            Ellipse ellipse = new Ellipse
+            for (int i = 0; i < 5; i++) // Create multiple particles per tick for a denser spray
             {
-                Width = sprayAttributes.Width,
-                Height = sprayAttributes.Height,
-                Fill = new SolidColorBrush(sprayAttributes.Color) // Use the color from DrawingAttributes
-            };
+                double angle = random.NextDouble() * 2 * Math.PI;
+                double distance = Math.Sqrt(random.NextDouble()) * sprayRadius;
 
-            // Position the ellipse at the calculated point
-            InkCanvas.SetLeft(ellipse, particleX);
-            InkCanvas.SetTop(ellipse, particleY);
+                double particleX = sprayCenter.X + distance * Math.Cos(angle);
+                double particleY = sprayCenter.Y + distance * Math.Sin(angle);
 
-            // Add the ellipse to the ink canvas
-            inkCanvas.Children.Add(ellipse);
+                Ellipse ellipse = new Ellipse
+                {
+                    Width = sprayAttributes.Width,
+                    Height = sprayAttributes.Height,
+                    Fill = new SolidColorBrush(sprayAttributes.Color),
+                    Opacity = sprayAttributes.Color.A / 255.0, // Use the alpha channel for transparency
+                };
+
+                InkCanvas.SetLeft(ellipse, particleX - sprayAttributes.Width / 2);
+                InkCanvas.SetTop(ellipse, particleY - sprayAttributes.Height / 2);
+
+                inkCanvas.Children.Add(ellipse);
+            }
         }
     }
 
-
-    private void InkCanvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void InkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
         IsMousePressed = true;
         sprayCenter = e.GetPosition(inkCanvas);
     }
 
-    private void InkCanvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+    private void InkCanvas_MouseMove(object sender, MouseEventArgs e)
     {
         if (IsMousePressed)
         {
@@ -85,7 +88,7 @@ public class SprayEffect
         }
     }
 
-    private void InkCanvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void InkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
     {
         IsMousePressed = false;
     }

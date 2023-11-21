@@ -32,7 +32,7 @@
                     <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/pen-1.png"/>
                 </ToggleButton>
                 <ToggleButton Name="HighlighterBtn" Padding="5" Margin="0,0,10,0" ToolTip="Highlighter" Background="White" Click="HighlighterBtn_Click">
-                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/pen-1.png"/>
+                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/border-color.png"/>
                 </ToggleButton>
                 <ToggleButton Name="EraserBtn" Padding="5" Margin="0,0,10,0" ToolTip="Eraser" Background="White" Click="EraserBtn_Click">
                     <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/erase.png"/>
@@ -42,7 +42,7 @@
             <Label Content="Brush Colour" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
             <xctk:ColorPicker x:Name="PenColorPicker" SelectedColorChanged="PenColorPicker_SelectedColorChanged" ShowStandardColors="False" UsingAlphaChannel="False" SelectedColor="Black" Margin="5,10,0,0" Height="30" ColorMode="ColorCanvas" DisplayColorAndName="True" Width="200" HorizontalAlignment="Left" FontSize="14"/>
             <Label Content="Pen thickness" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
-            <Slider x:Name="ThicknessSlider" ValueChanged="ThicknessSlider_ValueChanged" Margin="5,10,0,0" IsSnapToTickEnabled="True" Minimum="1" Maximum="5" Value="2"/>
+            <Slider x:Name="ThicknessSlider" ValueChanged="ThicknessSlider_ValueChanged" Margin="5,10,0,0" IsSnapToTickEnabled="True" Minimum="1" Maximum="5" Value="1"/>
             <Label x:Name="SelectedModeLabel"  FontWeight="SemiBold" FontSize="16" Content="Selected Mode: Spray" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10"/>
             <StackPanel Grid.Column="1" Margin="10" VerticalAlignment="Center" Orientation="Horizontal">
                 <!-- Load Image Button -->
