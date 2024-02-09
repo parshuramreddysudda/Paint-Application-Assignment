@@ -18,23 +18,23 @@
         "runtime": {
           "lib/net5.0/Xceed.Wpf.AvalonDock.NET5.dll": {
             "assemblyVersion": "4.5.0.0",
-            "fileVersion": "4.5.0.0"
+            "fileVersion": "0.0.0.0"
           },
           "lib/net5.0/Xceed.Wpf.AvalonDock.Themes.Aero.NET5.dll": {
             "assemblyVersion": "4.5.0.0",
-            "fileVersion": "4.5.0.0"
+            "fileVersion": "0.0.0.0"
           },
           "lib/net5.0/Xceed.Wpf.AvalonDock.Themes.Metro.NET5.dll": {
             "assemblyVersion": "4.5.0.0",
-            "fileVersion": "4.5.0.0"
+            "fileVersion": "0.0.0.0"
           },
           "lib/net5.0/Xceed.Wpf.AvalonDock.Themes.VS2010.NET5.dll": {
             "assemblyVersion": "4.5.0.0",
-            "fileVersion": "4.5.0.0"
+            "fileVersion": "0.0.0.0"
           },
           "lib/net5.0/Xceed.Wpf.Toolkit.NET5.dll": {
             "assemblyVersion": "4.5.0.0",
-            "fileVersion": "4.5.0.0"
+            "fileVersion": "0.0.0.0"
           }
         },
         "resources": {
